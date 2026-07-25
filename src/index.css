@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  
+  --color-accent-500: #8b5cf6;
+  
+  --color-bg-base: #0a0a0a;
+  --color-bg-surface: #121212;
+  --color-bg-subtle: #1a1a1a;
+  
+  --color-border-subtle: #262626;
+  --color-border-default: #333333;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+  
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* ── MODE CLAIR (LIGHT THEME OVERRIDES) ── */
+html.light-mode {
+  color-scheme: light !important;
+  --background: #f8fafc !important;
+  --foreground: #0f172a !important;
+}
+
+html.light-mode body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Arrière-plans de base de la page et conteneurs principaux */
+html.light-mode layout,
+html.light-mode main,
+html.light-mode .bg-\[\#0a0a0a\],
+html.light-mode .bg-\[\#0d0d0d\],
+html.light-mode .bg-\[\#050505\],
+html.light-mode .bg-\[\#000000\],
+html.light-mode .bg-\[\#000\],
+html.light-mode .bg-black,
+html.light-mode .bg-neutral-950,
+html.light-mode [class*="bg-neutral-950"],
+html.light-mode .bg-gradient-to-br,
+html.light-mode .from-\[\#0a0a0a\],
+html.light-mode .to-\[\#121212\] {
+  background-color: #f8fafc !important;
+  background-image: none !important;
+  color: #0f172a !important;
+}
+
+/* Barres de navigation (Sidebar & Header) */
+html.light-mode aside,
+html.light-mode header,
+html.light-mode .bg-black\/40,
+html.light-mode .bg-black\/20,
+html.light-mode .bg-black\/60 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Cartes principales, Modales, Panneaux et Conteneurs */
+html.light-mode .bg-\[\#121212\],
+html.light-mode .bg-\[\#141414\],
+html.light-mode .bg-\[\#161616\],
+html.light-mode .bg-neutral-900,
+html.light-mode [class*="bg-neutral-900"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Éléments secondaires, Sous-cartes, Champs de saisie, Sélecteurs */
+html.light-mode .bg-\[\#181818\],
+html.light-mode .bg-\[\#1a1a1a\],
+html.light-mode .bg-\[\#1f1f1f\],
+html.light-mode .bg-\[\#202020\],
+html.light-mode .bg-\[\#222\],
+html.light-mode .bg-\[\#222222\],
+html.light-mode .bg-\[\#262626\],
+html.light-mode .bg-\[\#2a2a2a\],
+html.light-mode .bg-neutral-800,
+html.light-mode [class*="bg-neutral-800"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Cases du Calendrier & Agenda (Jours du mois et hors mois) */
+html.light-mode .bg-\[\#101010\],
+html.light-mode .bg-\[\#1c1c1c\],
+html.light-mode .bg-\[\#0f0f0f\] {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Badges de statut Web, Priorités & Pills en Mode Clair */
+html.light-mode .text-red-400 { color: #e11d48 !important; }
+html.light-mode .bg-red-400\/10,
+html.light-mode .bg-red-500\/10,
+html.light-mode .bg-red-500\/15,
+html.light-mode .bg-rose-500\/10,
+html.light-mode .bg-rose-500\/15,
+html.light-mode .bg-rose-500\/20 {
+  background-color: #ffe4e6 !important;
+  color: #9f1239 !important;
+  border-color: #fecdd3 !important;
+}
+
+html.light-mode .text-amber-400,
+html.light-mode .text-amber-300 { color: #d97706 !important; }
+html.light-mode .bg-amber-400\/10,
+html.light-mode .bg-amber-500\/10,
+html.light-mode .bg-amber-500\/15,
+html.light-mode .bg-amber-500\/20 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+}
+
+html.light-mode .text-emerald-400,
+html.light-mode .text-emerald-300 { color: #059669 !important; }
+html.light-mode .bg-emerald-400\/10,
+html.light-mode .bg-emerald-500\/10,
+html.light-mode .bg-emerald-500\/15,
+html.light-mode .bg-emerald-500\/20 {
+  background-color: #dcfce7 !important;
+  color: #065f46 !important;
+  border-color: #a7f3d0 !important;
+}
+
+html.light-mode .text-violet-400,
+html.light-mode .text-violet-300 { color: #7c3aed !important; }
+html.light-mode .bg-violet-500\/10,
+html.light-mode .bg-violet-500\/15,
+html.light-mode .bg-violet-500\/20 {
+  background-color: #f3e8ff !important;
+  color: #6b21a8 !important;
+  border-color: #e9d5ff !important;
+}
+
+/* États de survol en Mode Clair */
+html.light-mode .hover\:bg-neutral-800:hover,
+html.light-mode .hover\:bg-neutral-800\/50:hover,
+html.light-mode .hover\:bg-neutral-800\/80:hover,
+html.light-mode .hover\:bg-\[\#181818\]:hover,
+html.light-mode .hover\:bg-\[\#1f1f1f\]:hover,
+html.light-mode .hover\:bg-\[\#262626\]:hover,
+html.light-mode .hover\:bg-\[\#222\]:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Couleurs des textes & Typographie */
+html.light-mode .text-white,
+html.light-mode .text-\[\#ededed\],
+html.light-mode .text-neutral-100,
+html.light-mode .text-neutral-200 {
+  color: #0f172a !important;
+}
+
+html.light-mode .text-neutral-300,
+html.light-mode .text-neutral-400 {
+  color: #334155 !important;
+}
+
+html.light-mode .text-neutral-500,
+html.light-mode .text-neutral-600 {
+  color: #64748b !important;
+}
+
+/* Bordures & Lignes de séparation */
+html.light-mode .border-\[\#262626\],
+html.light-mode .border-\[\#333\],
+html.light-mode .border-\[\#222\],
+html.light-mode .border-\[\#1c1c1c\],
+html.light-mode .border-\[\#242424\],
+html.light-mode .border-\[\#1f1f1f\],
+html.light-mode .border-\[\#161616\],
+html.light-mode .border-neutral-800,
+html.light-mode .border-neutral-800\/50,
+html.light-mode .border-neutral-700 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Formulaires (Champs Input, Textarea, Select) */
+html.light-mode input,
+html.light-mode textarea,
+html.light-mode select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light-mode input::placeholder,
+html.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Protection du texte des Boutons d'Action & Badges Colorés (Boutons Violets, Bleus, etc.) */
+html.light-mode .bg-violet-600,
+html.light-mode .bg-violet-500,
+html.light-mode .bg-blue-600,
+html.light-mode .bg-blue-500,
+html.light-mode .bg-emerald-600,
+html.light-mode .bg-emerald-500,
+html.light-mode .bg-red-600,
+html.light-mode .bg-red-500,
+html.light-mode .bg-indigo-600,
+html.light-mode .bg-amber-600,
+html.light-mode .bg-rose-600,
+html.light-mode .bg-gradient-to-r,
+html.light-mode .bg-gradient-to-br.from-violet-500 {
+  color: #ffffff !important;
+}
+
+html.light-mode .bg-violet-600 *,
+html.light-mode .bg-violet-500 *,
+html.light-mode .bg-blue-600 *,
+html.light-mode .bg-emerald-600 *,
+html.light-mode .bg-red-600 * {
+  color: #ffffff !important;
+}
+
+/* Modales & Superpositions de fond */
+html.light-mode .bg-black\/80,
+html.light-mode .bg-black\/70 {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* En-têtes de tableaux & Lignes en Mode Clair */
+html.light-mode table thead tr,
+html.light-mode table thead th,
+html.light-mode tr.bg-neutral-900\/90,
+html.light-mode tr.bg-neutral-900\/80,
+html.light-mode tr.bg-neutral-900\/70,
+html.light-mode tr.bg-neutral-900\/60,
+html.light-mode tr.bg-neutral-900\/50,
+html.light-mode tr.bg-neutral-900\/40,
+html.light-mode tr.bg-neutral-900 {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light-mode table thead th {
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+
+html.light-mode table tbody tr {
+  border-color: #e2e8f0 !important;
+}
+
+html.light-mode table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Recharts (Graphiques) en Mode Clair */
+html.light-mode .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-mode .recharts-tooltip-item,
+html.light-mode .recharts-tooltip-item-list,
+html.light-mode .recharts-tooltip-item-name,
+html.light-mode .recharts-tooltip-item-value,
+html.light-mode .recharts-tooltip-label {
+  color: #0f172a !important;
+}
+
+html.light-mode .recharts-tooltip-cursor {
+  fill: rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-mode .recharts-cartesian-grid line {
+  stroke: #e2e8f0 !important;
+}
+
+html.light-mode .recharts-cartesian-axis-tick-value,
+html.light-mode .recharts-text.recharts-cartesian-axis-tick-value {
+  fill: #475569 !important;
+}
+
+/* ── THÈMES DE COULEURS D'ACCENT ── */
+
+/* Indigo */
+[data-accent="indigo"] .bg-violet-600,
+[data-accent="indigo"] .bg-violet-500 { background-color: #4f46e5 !important; }
+[data-accent="indigo"] .hover\:bg-violet-500:hover,
+[data-accent="indigo"] .hover\:bg-violet-600:hover { background-color: #6366f1 !important; }
+[data-accent="indigo"] .text-violet-400,
+[data-accent="indigo"] .text-violet-300 { color: #818cf8 !important; }
+[data-accent="indigo"] .border-violet-500,
+[data-accent="indigo"] .border-violet-600 { border-color: #6366f1 !important; }
+[data-accent="indigo"] .bg-violet-500\/10,
+[data-accent="indigo"] .bg-violet-600\/20 { background-color: rgba(99, 102, 241, 0.12) !important; }
+
+/* Bleu Royal */
+[data-accent="blue"] .bg-violet-600,
+[data-accent="blue"] .bg-violet-500 { background-color: #2563eb !important; }
+[data-accent="blue"] .hover\:bg-violet-500:hover,
+[data-accent="blue"] .hover\:bg-violet-600:hover { background-color: #3b82f6 !important; }
+[data-accent="blue"] .text-violet-400,
+[data-accent="blue"] .text-violet-300 { color: #60a5fa !important; }
+[data-accent="blue"] .border-violet-500,
+[data-accent="blue"] .border-violet-600 { border-color: #3b82f6 !important; }
+[data-accent="blue"] .bg-violet-500\/10,
+[data-accent="blue"] .bg-violet-600\/20 { background-color: rgba(59, 130, 246, 0.12) !important; }
+
+/* Émeraude */
+[data-accent="emerald"] .bg-violet-600,
+[data-accent="emerald"] .bg-violet-500 { background-color: #059669 !important; }
+[data-accent="emerald"] .hover\:bg-violet-500:hover,
+[data-accent="emerald"] .hover\:bg-violet-600:hover { background-color: #10b981 !important; }
+[data-accent="emerald"] .text-violet-400,
+[data-accent="emerald"] .text-violet-300 { color: #34d399 !important; }
+[data-accent="emerald"] .border-violet-500,
+[data-accent="emerald"] .border-violet-600 { border-color: #10b981 !important; }
+[data-accent="emerald"] .bg-violet-500\/10,
+[data-accent="emerald"] .bg-violet-600\/20 { background-color: rgba(16, 185, 129, 0.12) !important; }
+
+/* Ambre Solaire */
+[data-accent="amber"] .bg-violet-600,
+[data-accent="amber"] .bg-violet-500 { background-color: #d97706 !important; }
+[data-accent="amber"] .hover\:bg-violet-500:hover,
+[data-accent="amber"] .hover\:bg-violet-600:hover { background-color: #f59e0b !important; }
+[data-accent="amber"] .text-violet-400,
+[data-accent="amber"] .text-violet-300 { color: #fbbf24 !important; }
+[data-accent="amber"] .border-violet-500,
+[data-accent="amber"] .border-violet-600 { border-color: #f59e0b !important; }
+[data-accent="amber"] .bg-violet-500\/10,
+[data-accent="amber"] .bg-violet-600\/20 { background-color: rgba(245, 158, 11, 0.12) !important; }
+
+/* Rose Néo */
+[data-accent="rose"] .bg-violet-600,
+[data-accent="rose"] .bg-violet-500 { background-color: #e11d48 !important; }
+[data-accent="rose"] .hover\:bg-violet-500:hover,
+[data-accent="rose"] .hover\:bg-violet-600:hover { background-color: #f43f5e !important; }
+[data-accent="rose"] .text-violet-400,
+[data-accent="rose"] .text-violet-300 { color: #fb7185 !important; }
+[data-accent="rose"] .border-violet-500,
+[data-accent="rose"] .border-violet-600 { border-color: #f43f5e !important; }
+[data-accent="rose"] .bg-violet-500\/10,
+[data-accent="rose"] .bg-violet-600\/20 { background-color: rgba(244, 63, 94, 0.12) !important; }
+
+/* Scrollbar minimale style Linear */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
