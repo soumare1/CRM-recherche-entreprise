@@ -1,0 +1,56 @@
+export const MOCK_CAMPAGNES = [
+  {
+    id: '11111111-1111-1111-1111-111111111111',
+    nom: 'Évry-Courcouronnes — Juillet 2026',
+    ville: 'Évry-Courcouronnes',
+    region: 'Île-de-France',
+    code_postal: '91000',
+    statut: 'active',
+    date_debut: '2026-07-01',
+    objectif_prospects: 100
+  }
+];
+
+export const MOCK_PROSPECTS = [
+  { nom: 'AFK Épicerie', secteur: 'Épicerie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 52 63', statut_web: 'aucun_site' },
+  { nom: 'La Bonoise', secteur: 'Boulangerie', adresse: 'Évry-Courcouronnes', telephone: '01 64 97 67 61', statut_web: 'aucun_site' },
+  { nom: 'Boulangerie Pâtisserie Sydney', secteur: 'Boulangerie-Pâtisserie', adresse: "1 Allée de l'Orme à Martin, Évry-Courcouronnes", telephone: '01 60 78 33 34', statut_web: 'aucun_site' },
+  { nom: 'Aux Délices d\'Evry', secteur: 'Boulangerie-Pâtisserie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 90 17', statut_web: 'aucun_site' },
+  { nom: 'N&BRY Coiffure', secteur: 'Coiffure', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 18 74', statut_web: 'aucun_site' },
+  { nom: 'Innovation Coiffure', secteur: 'Coiffure', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 21 63', statut_web: 'aucun_site' },
+  { nom: 'Feeling Beauty', secteur: 'Institut de beauté', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 39 83', statut_web: 'aucun_site' },
+  { nom: 'Guy Ongles', secteur: 'Onglerie', adresse: 'Évry-Courcouronnes', telephone: '06 21 49 81 12', statut_web: 'aucun_site' },
+  { nom: 'FAI Beauty', secteur: 'Institut de beauté', adresse: 'Évry-Courcouronnes', telephone: '07 67 36 10 67', statut_web: 'aucun_site' },
+  { nom: 'La Corbeille à Confitures', secteur: 'Épicerie fine', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 49 25', statut_web: 'aucun_site' },
+  { nom: 'Le Biblos', secteur: 'Restaurant', adresse: 'Place des Miroirs, Évry-Courcouronnes', telephone: '01 69 36 94 27', statut_web: 'aucun_site' },
+  { nom: 'Café de la République', secteur: 'Café', adresse: 'Place de la République, Évry-Courcouronnes', telephone: '01 60 77 62 78', statut_web: 'aucun_site' },
+  { nom: 'African Food', secteur: 'Restaurant africain', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 47 62', statut_web: 'aucun_site' },
+  { nom: 'Bodrum', secteur: 'Restaurant turc', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 05 15', statut_web: 'aucun_site' },
+  { nom: 'Le Goût de Carthage', secteur: 'Restaurant tunisien', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 93 47', statut_web: 'aucun_site' },
+  { nom: 'TENZ DUMPLING', secteur: 'Restaurant asiatique', adresse: 'Évry-Courcouronnes', telephone: '09 54 86 78 45', statut_web: 'aucun_site' },
+  { nom: 'Le hérisson jaune', secteur: 'Crêperie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 87 24', statut_web: 'aucun_site' },
+  { nom: 'Ravito Gourmand', secteur: 'Restauration rapide', adresse: 'Évry-Courcouronnes', telephone: '07 68 27 59 03', statut_web: 'aucun_site' },
+  { nom: 'Le Bar à Crêpes', secteur: 'Crêperie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 55 44', statut_web: 'aucun_site' },
+  { nom: 'La Petite Mordi', secteur: 'Snack', adresse: 'Évry-Courcouronnes', telephone: '06 50 92 34 18', statut_web: 'aucun_site' },
+  { nom: 'Nuri Doner Kebab', secteur: 'Kebab', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 72 07', statut_web: 'aucun_site' },
+  { nom: 'Crousti Poulet', secteur: 'Restauration rapide', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 30 43', statut_web: 'aucun_site' },
+  { nom: 'Supermarché G20', secteur: 'Supermarché', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 03 43', statut_web: 'site_obsolete' },
+  { nom: 'SERMI 2', secteur: 'Serrurerie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 91 82', statut_web: 'aucun_site' },
+  { nom: 'Gomes de Oliveira Antonio', secteur: 'Peinture/Bâtiment', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 63 49', statut_web: 'aucun_site' },
+  { nom: 'Joie Sucrée et Chocolatée', secteur: 'Pâtisserie', adresse: 'Évry-Courcouronnes', telephone: '06 95 44 72 31', statut_web: 'aucun_site' },
+  { nom: 'Friperie Factory', secteur: 'Friperie', adresse: 'Évry-Courcouronnes', telephone: '07 83 62 14 59', statut_web: 'aucun_site' },
+  { nom: 'Taymi Beauté', secteur: 'Institut de beauté', adresse: 'Évry-Courcouronnes', telephone: '06 44 38 57 92', statut_web: 'aucun_site' },
+  { nom: 'COIFF\'EVRY', secteur: 'Coiffure', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 85 14', statut_web: 'site_obsolete' },
+  { nom: 'Boulangerie de la Gare', secteur: 'Boulangerie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 60 25', statut_web: 'aucun_site' }
+].map((p, i) => ({
+  id: `prospect-${i}`,
+  campagne_id: '11111111-1111-1111-1111-111111111111',
+  ...p,
+  ville: 'Évry-Courcouronnes',
+  pipeline_stage: 'a_contacter',
+  priorite: 0,
+  source: 'import_excel',
+  tags: [],
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}));
