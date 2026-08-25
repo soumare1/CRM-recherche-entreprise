@@ -6,7 +6,7 @@
  * Récupérez-la dans : Supabase Dashboard > Settings > API > service_role
  */
 
-const SUPABASE_URL = 'https://ftopirwdmjrzybbqmhuf.supabase.co';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://votre-projet.supabase.co';
 // ⚠️ Remplacez par votre service_role key (Settings > API > service_role)
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'REMPLACEZ_PAR_VOTRE_SERVICE_ROLE_KEY';
 

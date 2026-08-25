@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 
-const projectDir = 'd:\\dev\\CRM prospect';
+const projectDir = process.cwd();
 
 // Historique de commits ultra-naturel, éparpillé sur 24 jours avec plusieurs commits par jour (sans emoticons)
 const commits = [

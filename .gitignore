@@ -1,4 +1,4 @@
-# Logs
+# Logs & Debug
 logs
 *.log
 npm-debug.log*
@@ -7,12 +7,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.local.example
+*.local
+
+# Node modules & Build output
 node_modules
 dist
 dist-ssr
-*.local
 
-# Editor directories and files
+# Editor & System directories
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,3 +28,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary & AI assistant storage
+.tempmediaStorage
+.gemini
