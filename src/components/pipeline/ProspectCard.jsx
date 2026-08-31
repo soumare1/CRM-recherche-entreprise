@@ -37,11 +37,13 @@ export default function ProspectCard({ prospect }) {
     }
   }
 
-  const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
-  const siteUrl = prospect.site_web || `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
-  const cleanDomain = prospect.site_web
+  const hasRealWebsite = Boolean(prospect.site_web && prospect.site_web.trim().length > 0);
+  const siteUrl = hasRealWebsite
+    ? (prospect.site_web.startsWith('http') ? prospect.site_web : `https://${prospect.site_web}`)
+    : null;
+  const cleanDomain = hasRealWebsite
     ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]
-    : (prospect.statut_web === 'site_obsolete' ? 'Site obsolète' : 'Voir le site');
+    : null;
 
   return (
     <div
@@ -86,7 +88,7 @@ export default function ProspectCard({ prospect }) {
       {/* Badges de contexte : Site Web & Rappels */}
       <div className="flex flex-wrap items-center gap-1.5 my-2.5">
         {/* Pilule Site Web cliquable */}
-        {hasWebsite ? (
+        {hasRealWebsite ? (
           <a
             href={siteUrl}
             target="_blank"
@@ -100,7 +102,7 @@ export default function ProspectCard({ prospect }) {
             <ExternalLink size={10} className="shrink-0 opacity-70 group-hover/link:opacity-100" />
           </a>
         ) : (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-neutral-800/60 text-neutral-500 border border-neutral-700/50">
             Aucun site web
           </span>
         )}

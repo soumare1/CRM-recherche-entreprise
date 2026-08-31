@@ -35,17 +35,14 @@ export default function ProspectDetail() {
     site_ok: { label: 'Site web présent', color: 'text-emerald-400 bg-emerald-400/10' }
   }[prospect.statut_web] || { label: prospect.statut_web, color: 'text-neutral-400 bg-neutral-400/10' };
 
-  const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
-
-  // URL directe vers le site web de l'établissement
-  const cleanSlug = prospect.nom ? prospect.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') : 'entreprise';
-  const directSiteUrl = prospect.site_web
+  const hasRealWebsite = Boolean(prospect.site_web && prospect.site_web.trim().length > 0);
+  const directSiteUrl = hasRealWebsite
     ? (prospect.site_web.startsWith('http') ? prospect.site_web : `https://${prospect.site_web}`)
-    : `https://www.${cleanSlug}.fr`;
+    : null;
 
-  const displayDomain = prospect.site_web
+  const displayDomain = hasRealWebsite
     ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
-    : `www.${cleanSlug}.fr`;
+    : null;
 
   const handleSaveNote = () => {
     if (!noteText.trim()) return;
@@ -133,7 +130,7 @@ export default function ProspectDetail() {
               </div>
             )}
 
-            {hasWebsite && (
+            {hasRealWebsite ? (
               <a
                 href={directSiteUrl}
                 target="_blank"
@@ -156,6 +153,22 @@ export default function ProspectDetail() {
                   <ExternalLink size={14} />
                 </div>
               </a>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-[#181818] border border-[#262626] flex items-center justify-between gap-3 text-neutral-400">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Globe size={16} className="text-neutral-500 shrink-0" />
+                  <span className="text-xs font-medium">Aucun site web répertorié</span>
+                </div>
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold rounded-lg transition-colors shrink-0"
+                >
+                  <Search size={12} />
+                  <span>Rechercher sur Google</span>
+                </a>
+              </div>
             )}
 
             {prospect.notes && (

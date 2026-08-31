@@ -48,6 +48,7 @@ export const SECTEURS = [
   { id: 'grossistes',            label: 'Grossistes',               icon: 'Warehouse' },
   { id: 'manufactures_ateliers', label: 'Manufactures & Ateliers',  icon: 'Factory' },
   { id: 'gestion_stock',         label: 'Gestion de Stock',         icon: 'PackageSearch' },
+  { id: 'enseignement_formation',label: 'Enseignement & Formation', icon: 'GraduationCap' },
   { id: 'autre',                 label: 'Autre',                    icon: 'Building2' },
 ];
 

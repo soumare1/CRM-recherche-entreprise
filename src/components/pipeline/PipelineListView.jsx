@@ -54,7 +54,7 @@ export default function PipelineListView({ prospects }) {
                   <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
                     {cleanDomain ? (
                       <a
-                        href={p.site_web}
+                        href={p.site_web.startsWith('http') ? p.site_web : `https://${p.site_web}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-400 hover:underline transition-all"

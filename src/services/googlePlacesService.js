@@ -46,7 +46,10 @@ const SECTEUR_TO_PLACE_TYPES = {
     'home_goods_store', 'furniture_store',
   ],
   gestion_stock: [
-    'storage', 'moving_company',
+    'storage', 'moving_company', 'self_storage',
+  ],
+  enseignement_formation: [
+    'university', 'school', 'primary_school', 'secondary_school', 'preschool', 'educational_institution',
   ],
   autre: [
     'book_store', 'pharmacy', 'real_estate_agency',
@@ -93,6 +96,50 @@ function inferStatutWeb(place) {
 
   // HTTPS + domaine propre → on suppose un site présent, sera vérifié en live
   return 'site_ok';
+}
+
+/**
+ * Infère le secteur d'activité réel d'un établissement à partir de son nom et de ses types Google Places.
+ * Évite les mauvaises classifications (ex: université classée en gestion de stock).
+ */
+function inferPlaceSector(p, searchedSecteurId, searchedSecteurInfo, secteurs) {
+  const types = p.types || [];
+  const name = (p.displayName?.text || '').toLowerCase();
+
+  // Établissement d'enseignement ou formation
+  const isEducation =
+    types.some(t => ['university', 'school', 'primary_school', 'secondary_school', 'preschool', 'educational_institution'].includes(t)) ||
+    /universit|ecole|école|lycee|lycée|college|collège|faculte|faculté|formation/i.test(name);
+
+  if (isEducation) {
+    const ensInfo = (secteurs || []).find(s => s.id === 'enseignement_formation');
+    return {
+      secteur_id: 'enseignement_formation',
+      secteur: ensInfo?.label || 'Enseignement & Formation',
+      secteur_icon: ensInfo?.icon || 'GraduationCap',
+    };
+  }
+
+  // Si le secteur recherché était gestion_stock mais que le type réel n'est pas du stock
+  if (searchedSecteurId === 'gestion_stock') {
+    const isRealStock = types.some(t => ['storage', 'moving_company', 'self_storage', 'warehouse'].includes(t)) ||
+      /stock|entrepot|entrepôt|garde.meuble|déménagement|demenagement|logistique/i.test(name);
+
+    if (!isRealStock) {
+      const autreInfo = (secteurs || []).find(s => s.id === 'autre');
+      return {
+        secteur_id: 'autre',
+        secteur: autreInfo?.label || 'Autre',
+        secteur_icon: autreInfo?.icon || 'Building2',
+      };
+    }
+  }
+
+  return {
+    secteur_id: searchedSecteurId,
+    secteur: searchedSecteurInfo?.label || searchedSecteurId,
+    secteur_icon: searchedSecteurInfo?.icon || 'Building2',
+  };
 }
 
 /**
@@ -234,23 +281,26 @@ export async function searchGooglePlaces(ville, secteurIds, secteurs, signal) {
             seenIds.add(p.id);
             return true;
           })
-          .map(p => ({
-            id: `gp-${p.id}`,
-            placeId: p.id,
-            nom: p.displayName?.text || 'Commerce',
-            secteur: sectorLabel,
-            secteur_id: secteurId,
-            secteur_icon: secteurInfo?.icon || 'Building2',
-            adresse: p.formattedAddress || `${ville}`,
-            ville,
-            telephone: formatPhone(p.nationalPhoneNumber),
-            statut_web: inferStatutWeb(p),
-            site_web: p.websiteUri || null,
-            google_maps_url: p.googleMapsUri || null,
-            note_google: p.rating || null,
-            nb_avis: p.userRatingCount || 0,
-            source: 'google_places',
-          }));
+          .map(p => {
+            const sec = inferPlaceSector(p, secteurId, secteurInfo, secteurs);
+            return {
+              id: `gp-${p.id}`,
+              placeId: p.id,
+              nom: p.displayName?.text || 'Commerce',
+              secteur: sec.secteur,
+              secteur_id: sec.secteur_id,
+              secteur_icon: sec.secteur_icon,
+              adresse: p.formattedAddress || `${ville}`,
+              ville,
+              telephone: formatPhone(p.nationalPhoneNumber),
+              statut_web: inferStatutWeb(p),
+              site_web: p.websiteUri || null,
+              google_maps_url: p.googleMapsUri || null,
+              note_google: p.rating || null,
+              nb_avis: p.userRatingCount || 0,
+              source: 'google_places',
+            };
+          });
       } catch (err) {
         if (err.name === 'AbortError') throw err;
         console.warn(`Places API — secteur ${secteurId}:`, err.message);

@@ -4,7 +4,7 @@ import {
   Square, Loader2, Store, Globe, Building2, ChevronDown,
   ShoppingBag, Utensils, Scissors, Wrench, Car, Check, X,
   Warehouse, Factory, PackageSearch, Sparkles, Phone, ArrowRight,
-  Filter, CheckCircle2, Zap, Layers, RefreshCw, ExternalLink
+  Filter, CheckCircle2, Zap, Layers, RefreshCw, ExternalLink, GraduationCap
 } from 'lucide-react';
 import { useProspectStore } from '../stores/prospectStore';
 import { useCampagneStore } from '../stores/campagneStore';
@@ -16,7 +16,7 @@ import { searchGooglePlaces, isGooglePlacesConfigured, checkSiteLive } from '../
 // ── Résolution icône Lucide depuis string ──────────────────────────────────
 const ICON_MAP = {
   Utensils, Scissors, ShoppingBag, Wrench, Car, Store, Building2,
-  Warehouse, Factory, PackageSearch
+  Warehouse, Factory, PackageSearch, GraduationCap
 };
 
 function SecteurIcon({ name, size = 14, className = '' }) {
