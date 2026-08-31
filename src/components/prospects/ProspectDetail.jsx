@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
 import { useProspectStore } from '../../stores/prospectStore';
-import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2 } from 'lucide-react';
-import { PIPELINE_STAGES, SECTEUR_DATA, SECTEURS } from '../../lib/constants';
+import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2, Monitor, Smartphone } from 'lucide-react';
+import { PIPELINE_STAGES, SECTEUR_DATA, SECTEURS, getOffresForSecteur } from '../../lib/constants';
 
 export default function ProspectDetail() {
   const selectedProspectId = useUIStore(state => state.selectedProspectId);
@@ -27,6 +27,7 @@ export default function ProspectDetail() {
   const secteurId = prospect.secteur_id
     || SECTEURS.find(s => s.label === prospect.secteur)?.id;
   const secteurData = SECTEUR_DATA[secteurId];
+  const offresRecommandees = getOffresForSecteur(secteurId);
 
   const webLabel = {
     aucun_site: { label: 'Aucun site web', color: 'text-red-400 bg-red-400/10' },
@@ -158,28 +159,78 @@ export default function ProspectDetail() {
             </div>
           </div>
 
-          {/* ── Grille tarifaire ── */}
-          {secteurData?.tarifs?.length > 0 && (
+          {/* ── Offres AppForge recommandées ── */}
+          {offresRecommandees.length > 0 && (
             <div>
               <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <TrendingUp size={13} />
-                Fourchette de prix — {prospect.secteur}
+                Offres AppForge recommandées
               </h3>
-              <div className="space-y-2">
-                {secteurData.tarifs.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-[#181818] border border-[#262626]">
-                    <div>
-                      <p className="text-xs font-medium text-neutral-300">{t.solution}</p>
-                      <p className="text-[11px] text-neutral-600 mt-0.5">{t.modele}</p>
+              <div className="space-y-3">
+                {offresRecommandees.map(offre => {
+                  const colorMap = {
+                    violet: { card: 'border-violet-500/30 bg-violet-500/5', badge: 'bg-violet-500/20 text-violet-300 border-violet-500/40', price: 'text-violet-300', icon: 'text-violet-400' },
+                    blue:   { card: 'border-blue-500/30 bg-blue-500/5',     badge: 'bg-blue-500/20 text-blue-300 border-blue-500/40',     price: 'text-blue-300',   icon: 'text-blue-400' },
+                    emerald:{ card: 'border-emerald-500/30 bg-emerald-500/5',badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',price:'text-emerald-300',icon:'text-emerald-400'},
+                  };
+                  const c = colorMap[offre.color] || colorMap.violet;
+                  const IconComp = offre.icon === 'Monitor' ? Monitor : offre.icon === 'Smartphone' ? Smartphone : Globe;
+
+                  return (
+                    <div key={offre.id} className={`p-4 rounded-xl border ${c.card}`}>
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className={`p-2 rounded-lg bg-[#1a1a1a] ${c.icon}`}>
+                          <IconComp size={16} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-sm text-white">{offre.label}</span>
+                            {offre.badge && (
+                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${c.badge}`}>{offre.badge}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {offre.tarifs.map((t, i) => (
+                          <div key={i} className="flex items-center justify-between text-sm">
+                            <div>
+                              <span className="text-neutral-300 text-xs">{t.label}</span>
+                              {t.detail && <span className="text-neutral-600 text-[11px] ml-1.5">— {t.detail}</span>}
+                            </div>
+                            <span className={`font-semibold ${c.price} shrink-0 ml-3`}>
+                              {t.price
+                                ? `${t.price}${t.unite}`
+                                : `${t.min.toLocaleString('fr-FR')}${t.max ? ` – ${t.max.toLocaleString('fr-FR')}` : ''}${t.suffix || ''} ${t.unite}`
+                              }
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-right shrink-0 ml-3">
-                      <p className="text-sm font-semibold text-white">
-                        {t.min.toLocaleString('fr-FR')} – {t.max.toLocaleString('fr-FR')} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {/* Tarifs détaillés par secteur */}
+              {secteurData?.tarifs?.length > 0 && (
+                <div className="mt-3 p-3 rounded-xl bg-[#181818] border border-[#262626]">
+                  <p className="text-[11px] text-neutral-500 font-medium mb-2 uppercase tracking-wide">Détail pour {prospect.secteur}</p>
+                  <div className="space-y-2">
+                    {secteurData.tarifs.map((t, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-neutral-300">{t.solution}</p>
+                          <p className="text-[11px] text-neutral-600">{t.modele}</p>
+                        </div>
+                        <p className="text-xs font-semibold text-white shrink-0 ml-3">
+                          {t.min.toLocaleString('fr-FR')}{t.max ? ` – ${t.max.toLocaleString('fr-FR')}` : '+'} €
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

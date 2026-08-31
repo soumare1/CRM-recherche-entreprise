@@ -51,35 +51,100 @@ export const SECTEURS = [
   { id: 'autre',                 label: 'Autre',                    icon: 'Building2' },
 ];
 
+// ── Catalogue officiel AppForge ───────────────────────────────────────────
+// Source : brochure commerciale buzz SAS / AppForge
+export const APPFORGE_OFFRES = [
+  {
+    id: 'logiciel_sur_mesure',
+    label: 'Logiciel sur-mesure',
+    badge: 'PRIORITÉ',
+    badgeColor: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+    icon: 'Monitor',
+    description: 'CRM, planning, gestion de production, gestion de stock, suivi client, tableaux de bord… On développe le logiciel dont l\'entreprise a besoin, exactement comme elle en a besoin.',
+    pourQui: 'Toute PME qui bosse encore sur Excel, papier, ou avec un logiciel qui ne fait pas ce qu\'elle veut. Grossistes, ateliers, restos, artisans, e-commerçants, services…',
+    tarifs: [
+      { label: 'Licence de départ', detail: 'Selon complexité', min: 1400, max: 4000, unite: '€', suffix: '+' },
+      { label: 'Abonnement mensuel', detail: 'Maintenance + hébergement', price: 65, unite: '€/mois' },
+    ],
+    color: 'violet',
+  },
+  {
+    id: 'site_internet',
+    label: 'Site internet',
+    badge: null,
+    badgeColor: null,
+    icon: 'Globe',
+    description: 'Vitrine simple, sites multi-pages, sites complexes avec espace client. Pour les restos on peut aussi installer des QR codes en salle avec un backoffice où ils mettent à jour leur carte eux-mêmes.',
+    pourQui: 'Toute entreprise sans site, ou avec un site vieux qui ne ramène rien. Restos, artisans, commerces, indépendants.',
+    tarifs: [
+      { label: 'Site simple', detail: 'Vitrine 1-3 pages', min: 400, max: 600, unite: '€' },
+      { label: 'Multi-pages', detail: '4+ pages, galerie, formulaires', min: 800, max: 1000, unite: '€' },
+      { label: 'Complexe', detail: 'Espace client, e-commerce…', min: 1400, max: null, unite: '€', suffix: '+' },
+      { label: 'Resto + QR + backoffice', detail: 'Carte digitale mise à jour par le client', min: 900, max: null, unite: '€', suffix: '+' },
+    ],
+    color: 'blue',
+  },
+  {
+    id: 'application_mobile',
+    label: 'Application mobile',
+    badge: null,
+    badgeColor: null,
+    icon: 'Smartphone',
+    description: 'Application iOS + Android, pour les clients de l\'entreprise (app de commande, réservation, fidélité…) ou pour un usage interne (équipes terrain, livreurs, techniciens).',
+    pourQui: 'Commerces avec une clientèle fidèle, entreprises avec des équipes qui bougent sur le terrain, boîtes qui veulent leur propre app.',
+    tarifs: [
+      { label: 'Application mobile', detail: 'Selon les fonctionnalités — à valider avec Kandioura', min: 1200, max: 4000, unite: '€', suffix: '+' },
+    ],
+    color: 'emerald',
+  },
+];
+
+// Helper : retourne la ou les offres recommandées pour un secteur donné
+export function getOffresForSecteur(secteurId) {
+  const map = {
+    restauration:          ['site_internet', 'application_mobile'],
+    coiffure_beaute:       ['site_internet', 'logiciel_sur_mesure'],
+    commerce_alimentaire:  ['site_internet', 'application_mobile'],
+    artisanat_services:    ['site_internet', 'logiciel_sur_mesure'],
+    automobile:            ['site_internet', 'logiciel_sur_mesure'],
+    boutique_mode:         ['site_internet', 'application_mobile'],
+    grossistes:            ['logiciel_sur_mesure'],
+    manufactures_ateliers: ['logiciel_sur_mesure'],
+    gestion_stock:         ['logiciel_sur_mesure'],
+    autre:                 ['site_internet'],
+  };
+  const ids = map[secteurId] || ['site_internet'];
+  return APPFORGE_OFFRES.filter(o => ids.includes(o.id));
+}
+
 // ── Données enrichies par secteur (solutions, accroches, tarifs) ───────────
 export const SECTEUR_DATA = {
   restauration: {
     sousCategories: ['Restaurant traditionnel', 'Restauration rapide', 'Snack / Kebab', 'Brasserie / Café', 'Pizzeria', 'Cuisine asiatique', 'Traiteur'],
     solutions: [
-      'Site vitrine avec menu en ligne',
-      'Système de réservation en ligne',
-      'Application de commande click & collect',
-      'Fidélité numérique (QR code)',
-      'Dashboard statistiques restaurateur',
+      'Site vitrine + menu en ligne + QR code en salle',
+      'Backoffice pour mettre la carte à jour soi-même',
+      'Application de commande click & collect (iOS + Android)',
+      'Fidélité numérique',
     ],
     accroches: [
-      'Vous perdez des réservations faute de disponibilités en ligne ?',
       'Vos clients cherchent votre menu sur Google et ne trouvent rien ?',
       'Votre concurrent en face a une app — pas vous ?',
+      'Votre carte papier est déjà obsolète dès qu\'elle sort de l\'imprimeur ?',
     ],
     tarifs: [
-      { solution: 'Site vitrine + menu', min: 800, max: 2000, modele: 'Forfait' },
-      { solution: 'Réservation en ligne', min: 1500, max: 3500, modele: 'Forfait + SaaS 30-60€/mois' },
-      { solution: 'Click & collect app', min: 2500, max: 5000, modele: 'Forfait + abo mensuel' },
+      { solution: 'Site vitrine simple', min: 400, max: 600, modele: 'Offre Site internet' },
+      { solution: 'Site + QR + backoffice carte', min: 900, max: 900, modele: 'Offre Site internet — Resto' },
+      { solution: 'Site multi-pages', min: 800, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'App commande / fidélité (iOS + Android)', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
   coiffure_beaute: {
     sousCategories: ['Salon de coiffure', 'Institut de beauté', 'Onglerie', 'Barbershop', 'Spa / Bien-être'],
     solutions: [
-      'Prise de RDV en ligne (agenda digital)',
       'Site vitrine avec galerie avant/après',
-      'Rappels automatiques par SMS',
+      'Logiciel de prise de RDV sur-mesure (agenda, rappels SMS, statistiques)',
       'Programme fidélité numérique',
     ],
     accroches: [
@@ -88,8 +153,9 @@ export const SECTEUR_DATA = {
       'Votre agenda est encore sur papier ?',
     ],
     tarifs: [
-      { solution: 'Prise de RDV en ligne', min: 1000, max: 2500, modele: 'Forfait + SaaS 20-40€/mois' },
-      { solution: 'Site vitrine', min: 800, max: 1800, modele: 'Forfait' },
+      { solution: 'Site vitrine simple', min: 400, max: 600, modele: 'Offre Site internet' },
+      { solution: 'Site multi-pages + galerie', min: 800, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'Logiciel agenda + RDV + rappels', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
     ],
   },
 
@@ -97,9 +163,8 @@ export const SECTEUR_DATA = {
     sousCategories: ['Épicerie', 'Boulangerie-Pâtisserie', 'Fromagerie', 'Traiteur', 'Cave à vins', 'Bio/Épicerie fine'],
     solutions: [
       'Site vitrine avec horaires et produits phares',
-      'Commande en ligne click & collect',
+      'App de commande click & collect (iOS + Android)',
       'Programme fidélité numérique',
-      'Newsletter & promotions digitales',
     ],
     accroches: [
       'Votre boulangerie est introuvable sur Google ?',
@@ -107,27 +172,28 @@ export const SECTEUR_DATA = {
       'Fidélisez vos habitués avec un programme points digital ?',
     ],
     tarifs: [
-      { solution: 'Site vitrine', min: 700, max: 1500, modele: 'Forfait' },
-      { solution: 'Click & collect', min: 2000, max: 4000, modele: 'Forfait + abo' },
+      { solution: 'Site vitrine simple', min: 400, max: 600, modele: 'Offre Site internet' },
+      { solution: 'Site multi-pages', min: 800, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'App click & collect (iOS + Android)', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
   artisanat_services: {
     sousCategories: ['Plomberie', 'Électricité', 'Menuiserie', 'Peinture/Bâtiment', 'Serrurerie', 'Nettoyage', 'Cordonnerie'],
     solutions: [
-      'Site vitrine avec demande de devis en ligne',
-      'Application de suivi de chantier client',
-      'Agenda et gestion d\'interventions',
-      'Galerie de réalisations',
+      'Site vitrine avec formulaire devis en ligne + galerie réalisations',
+      'Logiciel de gestion d\'interventions (planning, suivi chantier, devis)',
+      'App mobile technicien terrain (fiches d\'intervention, signatures)',
     ],
     accroches: [
       'Vos clients ne trouvent pas vos coordonnées en ligne ?',
-      'Vous perdez des devis car pas de suivi digital ?',
-      'Vos photos de réalisations ne sont pas en ligne ?',
+      'Vous gérez vos devis et plannings sur Excel ?',
+      'Vos techniciens reviennent avec des fiches papier ?',
     ],
     tarifs: [
-      { solution: 'Site vitrine + devis', min: 900, max: 2000, modele: 'Forfait' },
-      { solution: 'App suivi chantier', min: 2000, max: 5000, modele: 'Forfait' },
+      { solution: 'Site vitrine + formulaire devis', min: 400, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'Logiciel gestion interventions', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'App mobile technicien', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
@@ -135,9 +201,8 @@ export const SECTEUR_DATA = {
     sousCategories: ['Garage / Mécanique', 'Carrosserie', 'Vente de véhicules', 'Contrôle technique', 'Lavage auto', 'Pièces détachées'],
     solutions: [
       'Site vitrine avec prise de RDV entretien',
-      'Suivi de l\'état du véhicule client (SMS / app)',
+      'Logiciel suivi client véhicule (état, rappels entretien, devis réparation)',
       'Catalogue de véhicules en ligne',
-      'Gestion des devis de réparation',
     ],
     accroches: [
       'Vos clients rappellent pour savoir si leur voiture est prête ?',
@@ -145,18 +210,17 @@ export const SECTEUR_DATA = {
       'Votre catalogue de véhicules n\'est pas en ligne ?',
     ],
     tarifs: [
-      { solution: 'Site + prise de RDV', min: 1200, max: 3000, modele: 'Forfait' },
-      { solution: 'Suivi client véhicule', min: 2500, max: 5000, modele: 'Forfait + SaaS' },
+      { solution: 'Site vitrine + prise de RDV', min: 400, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'Logiciel suivi client / garage', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
     ],
   },
 
   boutique_mode: {
     sousCategories: ['Prêt-à-porter', 'Friperie / Vintage', 'Chaussures', 'Accessoires', 'Lingerie', 'Sportswear'],
     solutions: [
-      'Boutique e-commerce complète',
-      'Site vitrine avec catalogue',
-      'Gestion des stocks en ligne',
-      'Programme fidélité et newsletter',
+      'Site vitrine avec catalogue produits',
+      'Site complexe avec espace client / e-commerce',
+      'App mobile boutique (fidélité, nouveautés, commande)',
     ],
     accroches: [
       'Vos collections ne sont pas visibles en dehors du magasin ?',
@@ -164,8 +228,9 @@ export const SECTEUR_DATA = {
       'Votre concurrent vend déjà en ligne — pas vous ?',
     ],
     tarifs: [
-      { solution: 'E-commerce simple', min: 2000, max: 5000, modele: 'Forfait + hébergement' },
-      { solution: 'E-commerce avancé', min: 5000, max: 12000, modele: 'Forfait + abo' },
+      { solution: 'Site vitrine + catalogue', min: 800, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'Site complexe / e-commerce', min: 1400, max: null, modele: 'Offre Site internet — Complexe+' },
+      { solution: 'App mobile boutique / fidélité', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
@@ -193,11 +258,10 @@ export const SECTEUR_DATA = {
       'Vos commerciaux terrain reviennent avec des bons papier ?',
     ],
     tarifs: [
-      { solution: 'App commande B2B grossiste', min: 5000, max: 10000, modele: 'Forfait + abo mensuel' },
-      { solution: 'Dashboard gestion de stock', min: 3000, max: 7000, modele: 'Forfait + maintenance' },
-      { solution: 'Portail client grossiste', min: 3000, max: 7000, modele: 'Forfait + maintenance' },
-      { solution: 'App mobile terrain (offline)', min: 4000, max: 8000, modele: 'Forfait' },
-      { solution: 'Module facturation & relance', min: 1500, max: 4000, modele: 'Par module' },
+      { solution: 'Logiciel commande B2B + catalogue + stock', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'Dashboard gestion de stock temps réel', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'Portail client grossiste (factures, BL)', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'App mobile commercial terrain', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
@@ -226,12 +290,10 @@ export const SECTEUR_DATA = {
       'Vos opérateurs remplissent des fiches papier ?',
     ],
     tarifs: [
-      { solution: 'Suivi de production / MES léger', min: 8000, max: 15000, modele: 'Forfait + licence mensuelle' },
-      { solution: 'Gestion stock matières premières', min: 6000, max: 12000, modele: 'Forfait + SaaS 50-150€/mois' },
-      { solution: 'Planning atelier digital', min: 5000, max: 10000, modele: 'Forfait + maintenance' },
-      { solution: 'Module traçabilité/qualité', min: 3000, max: 7000, modele: 'Forfait + maintenance' },
-      { solution: 'Dashboard direction KPIs', min: 3000, max: 7000, modele: 'Forfait + maintenance' },
-      { solution: 'App opérateur tablette', min: 4000, max: 8000, modele: 'Forfait' },
+      { solution: 'Logiciel suivi de production (MES léger)', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'Gestion stock matières premières + alertes', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'Planning atelier + vue Gantt', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'App opérateur tablette (scan, saisie, signalement)', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
@@ -260,12 +322,10 @@ export const SECTEUR_DATA = {
       '3 dépôts mais pas de vue globale ?',
     ],
     tarifs: [
-      { solution: 'App gestion de stock simple', min: 3000, max: 6000, modele: 'Forfait + hébergement' },
-      { solution: 'App stock multi-site/avancé', min: 6000, max: 12000, modele: 'Forfait + SaaS 50-150€/mois' },
-      { solution: 'App inventaire mobile', min: 2000, max: 5000, modele: 'Forfait' },
-      { solution: 'Module prévisionnel', min: 3000, max: 6000, modele: 'Forfait + maintenance' },
-      { solution: 'Intégration e-commerce', min: 2000, max: 5000, modele: 'Forfait + maintenance' },
-      { solution: 'App location/prêt matériel', min: 4000, max: 8000, modele: 'Forfait' },
+      { solution: 'Logiciel gestion de stock (scan QR, alertes seuil)', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'App inventaire mobile (smartphone)', min: 1200, max: 4000, modele: 'Offre Application mobile' },
+      { solution: 'Dashboard stock multi-site', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'App location/prêt matériel', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 
@@ -273,15 +333,19 @@ export const SECTEUR_DATA = {
     sousCategories: ['Librairie / Papeterie', 'Bureau Tabac PMU', 'Fleuriste', 'Pharmacie', 'Agence immobilière', 'Autre'],
     solutions: [
       'Site vitrine professionnel',
-      'Application sur mesure selon besoin',
+      'Logiciel de gestion sur-mesure',
+      'Application mobile selon besoin',
     ],
     accroches: [
       'Votre activité mérite une présence digitale professionnelle.',
       'Digitalisez votre gestion pour gagner du temps.',
     ],
     tarifs: [
-      { solution: 'Site vitrine', min: 800, max: 2000, modele: 'Forfait' },
-      { solution: 'Application sur mesure', min: 3000, max: 15000, modele: 'Selon complexité' },
+      { solution: 'Site vitrine simple', min: 400, max: 600, modele: 'Offre Site internet' },
+      { solution: 'Site multi-pages', min: 800, max: 1000, modele: 'Offre Site internet' },
+      { solution: 'Site complexe / espace client', min: 1400, max: null, modele: 'Offre Site internet — Complexe+' },
+      { solution: 'Logiciel sur-mesure', min: 1400, max: 4000, modele: 'Offre Logiciel sur-mesure + 65€/mois' },
+      { solution: 'Application mobile', min: 1200, max: 4000, modele: 'Offre Application mobile' },
     ],
   },
 };
