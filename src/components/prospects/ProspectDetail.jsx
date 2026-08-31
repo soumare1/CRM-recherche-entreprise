@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
 import { useProspectStore } from '../../stores/prospectStore';
-import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2, Monitor, Smartphone, ExternalLink } from 'lucide-react';
+import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2, Monitor, Smartphone, ExternalLink, Search } from 'lucide-react';
 import { PIPELINE_STAGES, SECTEUR_DATA, SECTEURS, getOffresForSecteur } from '../../lib/constants';
 
 export default function ProspectDetail() {
@@ -36,10 +36,14 @@ export default function ProspectDetail() {
   }[prospect.statut_web] || { label: prospect.statut_web, color: 'text-neutral-400 bg-neutral-400/10' };
 
   const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
-  const siteUrl = prospect.site_web || `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
+
+  const cleanSlug = prospect.nom ? prospect.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') : 'entreprise';
+  const directUrl = prospect.site_web || `https://www.${cleanSlug}.fr`;
+  const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
+
   const displayDomain = prospect.site_web
     ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
-    : (prospect.statut_web === 'site_obsolete' ? 'Site obsolète détecté' : 'Site web existant');
+    : `www.${cleanSlug}.fr`;
 
   const handleSaveNote = () => {
     if (!noteText.trim()) return;
@@ -128,26 +132,46 @@ export default function ProspectDetail() {
             )}
 
             {hasWebsite && (
-              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between gap-3 shadow-lg hover:border-blue-400/60 transition-all">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
-                    <Globe size={18} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-blue-400 font-semibold mb-0.5">
-                      {prospect.statut_web === 'site_obsolete' ? 'Site Web Obsolète' : 'Site Web Existant'}
-                    </p>
-                    <p className="text-white font-medium text-sm truncate">{displayDomain}</p>
-                  </div>
-                </div>
+              <div className="space-y-2.5">
+                {/* 1. Bouton du DESSUS : Accès direct au site web */}
                 <a
-                  href={siteUrl}
+                  href={directUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0 active:scale-95"
+                  className="p-4 rounded-xl bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-violet-900/30 border border-blue-500/40 hover:border-blue-400 flex items-center justify-between gap-3 text-white transition-all shadow-lg group cursor-pointer active:scale-[0.98]"
                 >
-                  <span>Ouvrir le site</span>
-                  <ExternalLink size={13} />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Globe size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] text-blue-300 font-bold uppercase tracking-wider mb-0.5">
+                        {prospect.statut_web === 'site_obsolete' ? 'Site Web Obsolète (Direct)' : 'Site Web Existant (Direct)'}
+                      </p>
+                      <p className="text-white font-extrabold text-sm truncate">{displayDomain}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 group-hover:bg-blue-500 text-white text-xs font-black rounded-xl transition-all shadow-md shrink-0">
+                    <span>Ouvrir le site (Direct)</span>
+                    <ExternalLink size={13} />
+                  </div>
+                </a>
+
+                {/* 2. Bouton du DESSOUS : Recherche Google de l'établissement */}
+                <a
+                  href={googleSearchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3.5 rounded-xl bg-[#181818] hover:bg-[#22222b] border border-[#282828] hover:border-blue-500/30 flex items-center justify-between gap-3 text-neutral-300 hover:text-white transition-all group shadow-sm"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Search size={15} className="text-blue-400 shrink-0" />
+                    <span className="text-xs font-semibold truncate">Rechercher l'établissement sur Google</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] text-neutral-400 group-hover:text-blue-300 shrink-0 font-medium">
+                    <span>Lancer la recherche</span>
+                    <ExternalLink size={12} />
+                  </div>
                 </a>
               </div>
             )}
