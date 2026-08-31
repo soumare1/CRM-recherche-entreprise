@@ -34,13 +34,13 @@ export const MOCK_PROSPECTS = [
   { nom: 'La Petite Mordi', secteur: 'Snack', adresse: 'Évry-Courcouronnes', telephone: '06 50 92 34 18', statut_web: 'aucun_site' },
   { nom: 'Nuri Doner Kebab', secteur: 'Kebab', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 72 07', statut_web: 'aucun_site' },
   { nom: 'Crousti Poulet', secteur: 'Restauration rapide', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 30 43', statut_web: 'aucun_site' },
-  { nom: 'Supermarché G20', secteur: 'Supermarché', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 03 43', statut_web: 'site_obsolete' },
+  { nom: 'Supermarché G20', secteur: 'Supermarché', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 03 43', statut_web: 'site_obsolete', site_web: 'https://www.supermarchesg20.fr' },
   { nom: 'SERMI 2', secteur: 'Serrurerie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 91 82', statut_web: 'aucun_site' },
   { nom: 'Gomes de Oliveira Antonio', secteur: 'Peinture/Bâtiment', adresse: 'Évry-Courcouronnes', telephone: '01 60 78 63 49', statut_web: 'aucun_site' },
   { nom: 'Joie Sucrée et Chocolatée', secteur: 'Pâtisserie', adresse: 'Évry-Courcouronnes', telephone: '06 95 44 72 31', statut_web: 'aucun_site' },
   { nom: 'Friperie Factory', secteur: 'Friperie', adresse: 'Évry-Courcouronnes', telephone: '07 83 62 14 59', statut_web: 'aucun_site' },
   { nom: 'Taymi Beauté', secteur: 'Institut de beauté', adresse: 'Évry-Courcouronnes', telephone: '06 44 38 57 92', statut_web: 'aucun_site' },
-  { nom: 'COIFF\'EVRY', secteur: 'Coiffure', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 85 14', statut_web: 'site_obsolete' },
+  { nom: 'COIFF\'EVRY', secteur: 'Coiffure', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 85 14', statut_web: 'site_obsolete', site_web: 'https://www.coiffevry.fr' },
   { nom: 'Boulangerie de la Gare', secteur: 'Boulangerie', adresse: 'Évry-Courcouronnes', telephone: '01 60 77 60 25', statut_web: 'aucun_site' }
 ].map((p, i) => ({
   id: `prospect-${i}`,
