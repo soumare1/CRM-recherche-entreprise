@@ -4,13 +4,14 @@ import {
   Square, Loader2, Store, Globe, Building2, ChevronDown,
   ShoppingBag, Utensils, Scissors, Wrench, Car, Check, X,
   Warehouse, Factory, PackageSearch, Sparkles, Phone, ArrowRight,
-  Filter, CheckCircle2, Zap, Layers, RefreshCw
+  Filter, CheckCircle2, Zap, Layers, RefreshCw, ExternalLink
 } from 'lucide-react';
 import { useProspectStore } from '../stores/prospectStore';
 import { useCampagneStore } from '../stores/campagneStore';
 import { usePageStateStore } from '../stores/pageStateStore';
 import { SECTEURS, STATUTS_WEB } from '../lib/constants';
 import { searchOSMProspects } from '../services/osmService';
+import { searchGooglePlaces, isGooglePlacesConfigured, checkSiteLive } from '../services/googlePlacesService';
 
 // ── Résolution icône Lucide depuis string ──────────────────────────────────
 const ICON_MAP = {
@@ -293,6 +294,8 @@ export default function RecherchePage() {
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(new Set());
   const [importedIds, setImportedIds] = useState(new Set());
+  // Map placeId → 'checking' | 'site_ok' | 'site_obsolete' pour vérification live
+  const [siteChecks, setSiteChecks] = useState({});
 
   const abortControllerRef = useRef(null);
 
@@ -318,27 +321,84 @@ export default function RecherchePage() {
     setVille(villeInput.trim());
 
     try {
-      let realResults = await searchOSMProspects(
-        villeInput.trim(),
-        selectedSecteurs,
-        SECTEURS,
-        controller.signal
-      );
+      let finalResults = [];
+      const existingNoms = new Set(prospects.map(p => p.nom.toLowerCase()));
 
-      if (realResults.length < 5) {
-        const mockRaw = generateMockResults(villeInput.trim(), selectedSecteurs);
-        const realNames = new Set(realResults.map(r => r.nom.toLowerCase()));
-        const complement = mockRaw.filter(m => !realNames.has(m.nom.toLowerCase()));
-        realResults = [...realResults, ...complement];
+      // ── 1. Google Places API (données réelles avec téléphones) ────────────
+      if (isGooglePlacesConfigured()) {
+        try {
+          const googleResults = await searchGooglePlaces(
+            villeInput.trim(),
+            selectedSecteurs,
+            SECTEURS,
+            controller.signal
+          );
+          finalResults = googleResults.filter(r => !existingNoms.has(r.nom.toLowerCase()));
+        } catch (gErr) {
+          if (gErr.name === 'AbortError') throw gErr;
+          console.warn('Google Places indisponible, bascule sur OSM :', gErr.message);
+        }
       }
 
-      const existingNoms = new Set(prospects.map(p => p.nom.toLowerCase()));
-      const filtered = realResults.filter(r => !existingNoms.has(r.nom.toLowerCase()));
+      // ── 2. OpenStreetMap (fallback si pas de clé Google ou erreur) ────────
+      if (finalResults.length < 3) {
+        try {
+          const osmResults = await searchOSMProspects(
+            villeInput.trim(),
+            selectedSecteurs,
+            SECTEURS,
+            controller.signal
+          );
+          const osmFiltered = osmResults.filter(r => !existingNoms.has(r.nom.toLowerCase()));
+          // Merge : éviter les doublons par nom
+          const existingMergedNoms = new Set(finalResults.map(r => r.nom.toLowerCase()));
+          const osmNew = osmFiltered.filter(r => !existingMergedNoms.has(r.nom.toLowerCase()));
+          finalResults = [...finalResults, ...osmNew];
+        } catch (osmErr) {
+          if (osmErr.name === 'AbortError') throw osmErr;
+          console.warn('OSM indisponible :', osmErr.message);
+        }
+      }
 
-      setResults(filtered);
+      // ── 3. Données simulées (dernier recours) ───────────────────────────
+      if (finalResults.length < 5) {
+        const mockRaw = generateMockResults(villeInput.trim(), selectedSecteurs);
+        const existingMergedNoms = new Set(finalResults.map(r => r.nom.toLowerCase()));
+        const mockNew = mockRaw
+          .filter(m => !existingNoms.has(m.nom.toLowerCase()))
+          .filter(m => !existingMergedNoms.has(m.nom.toLowerCase()));
+        finalResults = [...finalResults, ...mockNew];
+      }
+
+      setResults(finalResults);
+
+      // ── Vérification live en arrière-plan pour les sites présents ─────────
+      // On vérifie uniquement les résultats qui ont un site présumé (site_ok)
+      // et qui viennent de Google Places (ils ont un site_web URL)
+      const toCheck = finalResults.filter(r => r.site_web && r.statut_web === 'site_ok');
+      if (toCheck.length > 0) {
+        // Marquer comme "en cours de vérification"
+        setSiteChecks(prev => {
+          const next = { ...prev };
+          toCheck.forEach(r => { next[r.id] = 'checking'; });
+          return next;
+        });
+
+        // Lancer les vérifications par batch de 3 en parallèle
+        (async () => {
+          const BATCH = 3;
+          for (let i = 0; i < toCheck.length; i += BATCH) {
+            const batch = toCheck.slice(i, i + BATCH);
+            await Promise.all(batch.map(async (r) => {
+              const liveStatus = await checkSiteLive(r.site_web);
+              setSiteChecks(prev => ({ ...prev, [r.id]: liveStatus }));
+            }));
+          }
+        })();
+      }
     } catch (err) {
       if (err.name !== 'AbortError') {
-        console.warn('Recherche OSM indisponible, bascule sur les données simulées :', err);
+        console.warn('Erreur recherche :', err);
         const mockRaw = generateMockResults(villeInput.trim(), selectedSecteurs);
         const existingNoms = new Set(prospects.map(p => p.nom.toLowerCase()));
         setResults(mockRaw.filter(r => !existingNoms.has(r.nom.toLowerCase())));
@@ -443,11 +503,14 @@ export default function RecherchePage() {
             <h2 className="text-3xl font-extrabold tracking-tight text-white">Recherche Intelligente</h2>
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/15 border border-violet-500/30 text-violet-300">
               <Sparkles size={13} className="text-violet-400" />
-              OSM & IA Live
+              {isGooglePlacesConfigured() ? 'Google Places' : 'OSM & IA Live'}
             </span>
           </div>
           <p className="text-sm text-neutral-400 max-w-2xl">
-            Détectez instantanément les commerces et entreprises locales dépourvus de site web pour enrichir vos campagnes de prospection.
+            {isGooglePlacesConfigured()
+              ? 'Données réelles via Google Places API — numéros de téléphone vérifiés, sites web, notes Google.'
+              : 'Détectez instantanément les commerces et entreprises locales dépourvus de site web pour enrichir vos campagnes de prospection.'
+            }
           </p>
         </div>
 
@@ -703,7 +766,12 @@ export default function RecherchePage() {
               {filteredResults.map(result => {
                 const isSelected = selected.has(result.id);
                 const isImported = importedIds.has(result.id);
-                const statutInfo = STATUTS_WEB.find(s => s.id === result.statut_web);
+                // Priorité : vérification live > statut initial Google
+                const liveCheck = siteChecks[result.id]; // 'checking' | 'site_ok' | 'site_obsolete' | undefined
+                const effectiveStatut = liveCheck && liveCheck !== 'checking'
+                  ? liveCheck
+                  : result.statut_web;
+                const statutInfo = STATUTS_WEB.find(s => s.id === effectiveStatut);
 
                 return (
                   <div
@@ -739,6 +807,11 @@ export default function RecherchePage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 mb-1">
                         <h4 className="font-bold text-white text-base truncate">{result.nom}</h4>
+                        {result.source === 'google_places' && (
+                          <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full shrink-0">
+                            📍 Google
+                          </span>
+                        )}
                         {result.source === 'osm' && (
                           <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 px-2 py-0.5 rounded-full shrink-0">
                             OSM Réel
@@ -767,15 +840,45 @@ export default function RecherchePage() {
                             </span>
                           </>
                         )}
+                        {result.site_web && (
+                          <>
+                            <span className="text-neutral-700">·</span>
+                            <a
+                              href={result.site_web}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={e => e.stopPropagation()}
+                              className="flex items-center gap-1 text-blue-400 hover:text-blue-300 hover:underline transition-colors max-w-[180px] truncate"
+                              title={result.site_web}
+                            >
+                              <ExternalLink size={11} className="shrink-0" />
+                              {result.site_web
+                                .replace(/^https?:\/\/(www\.)?/, '')
+                                .replace(/\/$/, '')
+                                .split('/')[0]
+                              }
+                            </a>
+                          </>
+                        )}
                       </div>
                     </div>
 
                     {/* Statut Web Pill */}
-                    <div className="shrink-0 hidden sm:block">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border ${statutInfo?.color}`}>
-                        <Globe size={13} />
-                        {statutInfo?.label}
-                      </span>
+                    <div className="shrink-0 hidden sm:flex items-center gap-2">
+                      {liveCheck === 'checking' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-neutral-700 text-neutral-500 bg-neutral-800/50">
+                          <Loader2 size={12} className="animate-spin" />
+                          Vérification...
+                        </span>
+                      ) : (
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border ${statutInfo?.color}`}>
+                          <Globe size={13} />
+                          {statutInfo?.label}
+                          {liveCheck && liveCheck !== 'checking' && (
+                            <span className="ml-1 text-[10px] opacity-60">✓</span>
+                          )}
+                        </span>
+                      )}
                     </div>
 
                     {/* Bouton d'import rapide 1-Clic */}
