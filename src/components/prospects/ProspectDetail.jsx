@@ -37,13 +37,17 @@ export default function ProspectDetail() {
 
   const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
 
-  const cleanSlug = prospect.nom ? prospect.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') : 'entreprise';
-  const directUrl = prospect.site_web || `https://www.${cleanSlug}.fr`;
+  // Vrai site web officiel issu directement de la fiche Google Maps (places.websiteUri)
+  const realWebsiteUrl = prospect.site_web;
+  const googleMapsUrl = prospect.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
   const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
 
-  const displayDomain = prospect.site_web
-    ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
-    : `www.${cleanSlug}.fr`;
+  // Accès direct au vrai site officiel s'il existe, sinon vers la fiche Google Maps officielle
+  const directUrl = realWebsiteUrl || googleMapsUrl;
+
+  const displayDomain = realWebsiteUrl
+    ? realWebsiteUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
+    : 'Fiche Google Maps';
 
   const handleSaveNote = () => {
     if (!noteText.trim()) return;
@@ -146,13 +150,15 @@ export default function ProspectDetail() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-[11px] text-blue-300 font-bold uppercase tracking-wider mb-0.5">
-                        {prospect.statut_web === 'site_obsolete' ? 'Site Web Obsolète (Direct)' : 'Site Web Existant (Direct)'}
+                        {realWebsiteUrl
+                          ? (prospect.statut_web === 'site_obsolete' ? 'Site Web Obsolète (Google Maps)' : 'Site Web Officiel (Google Maps)')
+                          : 'Fiche Google Maps Officielle'}
                       </p>
                       <p className="text-white font-extrabold text-sm truncate">{displayDomain}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 group-hover:bg-blue-500 text-white text-xs font-black rounded-xl transition-all shadow-md shrink-0">
-                    <span>Ouvrir le site (Direct)</span>
+                    <span>{realWebsiteUrl ? 'Ouvrir le site direct' : 'Voir sur Google Maps'}</span>
                     <ExternalLink size={13} />
                   </div>
                 </a>
