@@ -35,6 +35,12 @@ export default function ProspectDetail() {
     site_ok: { label: 'Site web présent', color: 'text-emerald-400 bg-emerald-400/10' }
   }[prospect.statut_web] || { label: prospect.statut_web, color: 'text-neutral-400 bg-neutral-400/10' };
 
+  const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
+  const siteUrl = prospect.site_web || `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
+  const displayDomain = prospect.site_web
+    ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
+    : (prospect.statut_web === 'site_obsolete' ? 'Site obsolète détecté' : 'Site web existant');
+
   const handleSaveNote = () => {
     if (!noteText.trim()) return;
     const existingNotes = prospect.notes ? prospect.notes + '\n' : '';
@@ -121,23 +127,27 @@ export default function ProspectDetail() {
               </div>
             )}
 
-            {prospect.site_web && (
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#262626] flex items-center justify-between gap-3">
+            {hasWebsite && (
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between gap-3 shadow-lg hover:border-blue-400/60 transition-all">
                 <div className="flex items-center gap-3 min-w-0">
-                  <Globe size={18} className="text-blue-400 shrink-0" />
+                  <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
+                    <Globe size={18} />
+                  </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-neutral-500 mb-0.5">Site Web</p>
-                    <p className="text-white font-medium text-sm truncate">{prospect.site_web}</p>
+                    <p className="text-xs text-blue-400 font-semibold mb-0.5">
+                      {prospect.statut_web === 'site_obsolete' ? 'Site Web Obsolète' : 'Site Web Existant'}
+                    </p>
+                    <p className="text-white font-medium text-sm truncate">{displayDomain}</p>
                   </div>
                 </div>
                 <a
-                  href={prospect.site_web}
+                  href={siteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0"
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0 active:scale-95"
                 >
-                  <span>Visiter</span>
-                  <ExternalLink size={12} />
+                  <span>Ouvrir le site</span>
+                  <ExternalLink size={13} />
                 </a>
               </div>
             )}

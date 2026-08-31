@@ -37,10 +37,11 @@ export default function ProspectCard({ prospect }) {
     }
   }
 
-  // Format domaine propre pour le bouton site web
+  const hasWebsite = (prospect.statut_web && prospect.statut_web !== 'aucun_site') || Boolean(prospect.site_web);
+  const siteUrl = prospect.site_web || `https://www.google.com/search?q=${encodeURIComponent(prospect.nom + ' ' + (prospect.adresse || prospect.ville || ''))}`;
   const cleanDomain = prospect.site_web
     ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]
-    : null;
+    : (prospect.statut_web === 'site_obsolete' ? 'Site obsolète' : 'Voir le site');
 
   return (
     <div
@@ -85,14 +86,14 @@ export default function ProspectCard({ prospect }) {
       {/* Badges de contexte : Site Web & Rappels */}
       <div className="flex flex-wrap items-center gap-1.5 my-2.5">
         {/* Pilule Site Web cliquable */}
-        {cleanDomain ? (
+        {hasWebsite ? (
           <a
-            href={prospect.site_web}
+            href={siteUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-400 hover:underline transition-all group/link"
-            title={`Ouvrir ${prospect.site_web}`}
+            title={`Ouvrir le site de ${prospect.nom}`}
           >
             <Globe size={11} className="shrink-0 text-blue-400" />
             <span className="truncate max-w-[130px]">{cleanDomain}</span>
