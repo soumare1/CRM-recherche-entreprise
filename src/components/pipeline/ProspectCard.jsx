@@ -1,9 +1,8 @@
 import { useDraggable } from '@dnd-kit/core';
-import { Phone, Calendar, Clock, AlertTriangle, Trash2, DollarSign, MoreVertical, ChevronRight, User } from 'lucide-react';
+import { Phone, Calendar, DollarSign, Trash2, Globe, ExternalLink, GripVertical, AlertTriangle, Building2 } from 'lucide-react';
 import { PRIORITIES, PIPELINE_STAGES } from '../../lib/constants';
 import { useUIStore } from '../../stores/uiStore';
 import { useProspectStore } from '../../stores/prospectStore';
-import { useState } from 'react';
 
 export default function ProspectCard({ prospect }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -13,10 +12,7 @@ export default function ProspectCard({ prospect }) {
   const setSelectedProspect = useUIStore((state) => state.setSelectedProspect);
   const setCallingProspectId = useUIStore((state) => state.setCallingProspectId);
   const openConfirmModal = useUIStore((state) => state.openConfirmModal);
-  const updateProspectStage = useProspectStore((state) => state.updateProspectStage);
   const deleteProspect = useProspectStore((state) => state.deleteProspect);
-
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const style = transform
     ? {
@@ -27,7 +23,7 @@ export default function ProspectCard({ prospect }) {
 
   const priorite = PRIORITIES.find((p) => p.value === prospect.priorite) || PRIORITIES[0];
 
-  // Calcul du statut de rappel (retard vs aujourdhui vs a venir)
+  // Statut du rappel (retard vs aujourdhui vs a venir)
   let reminderStatus = null;
   if (prospect.prochain_rappel) {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -41,6 +37,11 @@ export default function ProspectCard({ prospect }) {
     }
   }
 
+  // Format domaine propre pour le bouton site web
+  const cleanDomain = prospect.site_web
+    ? prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]
+    : null;
+
   return (
     <div
       ref={setNodeRef}
@@ -49,23 +50,31 @@ export default function ProspectCard({ prospect }) {
       {...listeners}
       onClick={() => setSelectedProspect(prospect.id)}
       className={`
-        group relative p-3.5 mb-3 bg-[#161616] rounded-xl border transition-all cursor-grab active:cursor-grabbing select-none shadow-md
-        hover:border-violet-500/60 hover:shadow-[0_8px_25px_rgba(139,92,246,0.15)] hover:bg-[#1a1a1a]
-        ${isDragging ? 'border-violet-500 shadow-2xl opacity-90 scale-[1.02] bg-[#1f1f1f]' : 'border-[#262626]'}
+        group relative p-4 mb-3.5 bg-[#141417] rounded-2xl border transition-all cursor-grab active:cursor-grabbing select-none shadow-lg
+        hover:border-violet-500/50 hover:shadow-[0_10px_30px_rgba(139,92,246,0.18)] hover:bg-[#18181f]
+        ${isDragging ? 'border-violet-500 shadow-2xl opacity-95 scale-[1.03] bg-[#1d1d26] ring-2 ring-violet-500/30' : 'border-[#242430]'}
       `}
     >
-      {/* Header carte : Nom + Priorité + Badge Montant */}
-      <div className="flex justify-between items-start mb-1.5 pr-8">
-        <div>
-          <h4 className="font-bold text-sm text-white group-hover:text-violet-300 transition-colors leading-snug">
-            {prospect.nom}
-          </h4>
-          <p className="text-xs text-neutral-400 mt-0.5">{prospect.secteur}</p>
+      {/* Visual top accent indicator */}
+      {priorite.value > 0 && (
+        <div className={`absolute top-0 left-6 right-6 h-0.5 rounded-full ${priorite.value === 2 ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-amber-500'}`} />
+      )}
+
+      {/* Header : Handle + Nom + Priorité */}
+      <div className="flex items-start justify-between gap-2 mb-2 pr-6">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <GripVertical size={13} className="text-neutral-600 group-hover:text-neutral-400 shrink-0 transition-colors" />
+            <h4 className="font-bold text-sm text-white group-hover:text-violet-300 transition-colors truncate">
+              {prospect.nom}
+            </h4>
+          </div>
+          <p className="text-xs text-neutral-400 truncate pl-4">{prospect.secteur || 'Secteur non spécifié'}</p>
         </div>
 
         {priorite.value > 0 && (
           <span
-            className={`px-1.5 py-0.5 text-[10px] font-bold rounded border shrink-0 ${priorite.color}`}
+            className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border shrink-0 ${priorite.color}`}
             title={`Priorité ${priorite.label}`}
           >
             {priorite.label}
@@ -73,11 +82,32 @@ export default function ProspectCard({ prospect }) {
         )}
       </div>
 
-      {/* Badge Rappel si présent */}
-      {reminderStatus && (
-        <div className="my-2">
+      {/* Badges de contexte : Site Web & Rappels */}
+      <div className="flex flex-wrap items-center gap-1.5 my-2.5">
+        {/* Pilule Site Web cliquable */}
+        {cleanDomain ? (
+          <a
+            href={prospect.site_web}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-400 hover:underline transition-all group/link"
+            title={`Ouvrir ${prospect.site_web}`}
+          >
+            <Globe size={11} className="shrink-0 text-blue-400" />
+            <span className="truncate max-w-[130px]">{cleanDomain}</span>
+            <ExternalLink size={10} className="shrink-0 opacity-70 group-hover/link:opacity-100" />
+          </a>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+            Aucun site web
+          </span>
+        )}
+
+        {/* Badge Rappel */}
+        {reminderStatus && (
           <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${
               reminderStatus.type === 'retard'
                 ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse'
                 : reminderStatus.type === 'aujourdhui'
@@ -85,16 +115,16 @@ export default function ProspectCard({ prospect }) {
                 : 'bg-neutral-800 text-neutral-300 border-neutral-700'
             }`}
           >
-            <Calendar size={11} />
+            <Calendar size={10} />
             {reminderStatus.label}
           </span>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Montant Estimé & Téléphone */}
-      <div className="flex items-center justify-between text-xs mt-2.5 pt-2 border-t border-[#222]">
-        <div className="flex items-center gap-1 font-extrabold text-emerald-400">
-          <DollarSign size={13} className="text-emerald-500" />
+      {/* Footer : Valeur & Téléphone */}
+      <div className="flex items-center justify-between text-xs pt-2.5 border-t border-[#22222d]">
+        <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg font-extrabold text-emerald-400">
+          <DollarSign size={12} className="text-emerald-400 shrink-0" />
           <span>
             {(Number(prospect.montant_estime) || 0).toLocaleString('fr-FR', {
               style: 'currency',
@@ -105,26 +135,36 @@ export default function ProspectCard({ prospect }) {
         </div>
 
         {prospect.telephone && (
-          <div className="flex items-center gap-1 text-neutral-400 text-[11px]">
-            <Phone size={11} />
+          <div className="flex items-center gap-1 text-neutral-400 font-mono text-[11px]">
+            <Phone size={11} className="text-neutral-500" />
             <span>{prospect.telephone}</span>
           </div>
         )}
       </div>
 
-      {/* Boutons d'action rapide au survol */}
+      {/* Actions rapides au survol */}
       <div
         className="absolute top-2.5 right-2.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200"
         onClick={(e) => e.stopPropagation()}
       >
+        {cleanDomain && (
+          <a
+            href={prospect.site_web}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg transition-transform hover:scale-105"
+            title="Visiter le site web"
+          >
+            <Globe size={12} />
+          </a>
+        )}
         <button
           className="p-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-lg shadow-lg transition-transform hover:scale-105 cursor-pointer"
           onClick={() => setCallingProspectId(prospect.id)}
           title="Appeler"
         >
-          <Phone size={13} />
+          <Phone size={12} />
         </button>
-
         <button
           className="p-1.5 bg-neutral-800 hover:bg-red-600 text-neutral-400 hover:text-white rounded-lg shadow-lg border border-[#333] transition-colors cursor-pointer"
           onClick={() => {
@@ -137,7 +177,7 @@ export default function ProspectCard({ prospect }) {
           }}
           title="Supprimer"
         >
-          <Trash2 size={13} />
+          <Trash2 size={12} />
         </button>
       </div>
     </div>

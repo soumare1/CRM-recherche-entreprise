@@ -9,7 +9,7 @@ import {
   Search, Filter, Phone, MapPin, Store, Trash2, Plus,
   ArrowUpDown, Flame, DollarSign, Globe, Calendar, Eye,
   AlertTriangle, UserCheck, Building, CheckSquare, Square,
-  X, TrendingUp, ChevronDown,
+  X, TrendingUp, ChevronDown, ExternalLink,
 } from 'lucide-react';
 import { PIPELINE_STAGES, SECTEURS, PRIORITIES, STATUTS_WEB } from '../lib/constants';
 
@@ -383,10 +383,27 @@ export default function ProspectsPage() {
                       </td>
 
                       {/* Présence Web */}
-                      <td className="px-5 py-3.5">
-                        <span className={`inline-flex px-2.5 py-0.5 rounded text-[11px] font-semibold border ${webObj.color}`}>
-                          {webObj.label}
-                        </span>
+                      <td className="px-5 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className={`inline-flex px-2.5 py-0.5 rounded text-[11px] font-semibold border ${webObj.color}`}>
+                            {webObj.label}
+                          </span>
+                          {prospect.site_web && (
+                            <a
+                              href={prospect.site_web}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-400 hover:underline transition-all shadow-sm"
+                              title={`Visiter ${prospect.site_web}`}
+                            >
+                              <Globe size={11} className="text-blue-400 shrink-0" />
+                              <span className="max-w-[120px] truncate">
+                                {prospect.site_web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '').split('/')[0]}
+                              </span>
+                              <ExternalLink size={9} className="shrink-0 opacity-70" />
+                            </a>
+                          )}
+                        </div>
                       </td>
 
                       {/* Valeur */}
@@ -409,6 +426,17 @@ export default function ProspectsPage() {
                       {/* Actions */}
                       <td className="px-5 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5">
+                          {prospect.site_web && (
+                            <a
+                              href={prospect.site_web}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white rounded-xl transition-all border border-blue-500/30 shadow-sm"
+                              title="Visiter le site web"
+                            >
+                              <Globe size={14} />
+                            </a>
+                          )}
                           <button onClick={() => setCallingProspectId(prospect.id)}
                             className="p-2 bg-violet-600/20 hover:bg-violet-600 text-violet-300 hover:text-white rounded-xl transition-all border border-violet-500/30 shadow-sm cursor-pointer"
                             title="Appeler">

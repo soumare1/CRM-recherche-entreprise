@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
 import { useProspectStore } from '../../stores/prospectStore';
-import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2, Monitor, Smartphone } from 'lucide-react';
+import { X, Phone, Globe, MapPin, Calendar, Plus, Clock, Save, TrendingUp, Trash2, Monitor, Smartphone, ExternalLink } from 'lucide-react';
 import { PIPELINE_STAGES, SECTEUR_DATA, SECTEURS, getOffresForSecteur } from '../../lib/constants';
 
 export default function ProspectDetail() {
@@ -118,6 +118,27 @@ export default function ProspectDetail() {
                   <p className="text-xs text-neutral-500 mb-0.5">Adresse</p>
                   <p className="text-white font-medium text-sm">{prospect.adresse}</p>
                 </div>
+              </div>
+            )}
+
+            {prospect.site_web && (
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#262626] flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Globe size={18} className="text-blue-400 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-neutral-500 mb-0.5">Site Web</p>
+                    <p className="text-white font-medium text-sm truncate">{prospect.site_web}</p>
+                  </div>
+                </div>
+                <a
+                  href={prospect.site_web}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all shadow-md shrink-0"
+                >
+                  <span>Visiter</span>
+                  <ExternalLink size={12} />
+                </a>
               </div>
             )}
 
